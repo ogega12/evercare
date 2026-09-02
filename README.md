@@ -62,18 +62,27 @@ Production notes
 - Set `SECURE_SSL_REDIRECT=True` and configure HSTS only after HTTPS is working
   end-to-end behind the reverse proxy.
 
-Render deployment
------------------
+Railway deployment
+------------------
 1. Push this project to a GitHub repository (do not commit `.env` or credentials).
-2. In Render, choose **New > Blueprint**, connect the repository, and apply
-   `render.yaml`. Render will create the web service and PostgreSQL database.
-3. After the first deploy, open the service URL and verify `/`, `/services/`,
-   `/booking/`, and `/contact/`.
-4. Create the first admin account from the Render Shell with
+2. In Railway, create a new project and choose **Deploy from GitHub repo**.
+   Railway will detect `railway.json` and use the configured Gunicorn command.
+3. Add a PostgreSQL service to the project. Railway provides its connection string
+   through the `DATABASE_URL` variable; link that variable to the web service.
+4. Add these web-service variables: `SECRET_KEY` (generate a long random value),
+   `DEBUG=False`, `ALLOWED_HOSTS=.up.railway.app`, and
+   `CSRF_TRUSTED_ORIGINS=https://*.up.railway.app`.
+   You can set `DATABASE_URL` on the web service to
+   `${{Postgres.DATABASE_URL}}` when the PostgreSQL service is named `Postgres`.
+5. Generate a Railway domain in the web service's **Networking** settings.
+   The app runs migrations on startup and serves static files through WhiteNoise.
+6. Open the generated URL and verify `/`, `/services/`, `/booking/`, and
+   `/contact/`.
+7. Open the Railway service shell and create the first administrator:
    `python manage.py createsuperuser`.
-5. Add SMTP variables in the Render service environment if email notifications
-   are needed. Uploaded media is not persistent on an ordinary web service;
-   use object storage or attach a persistent disk before relying on admin uploads.
+8. The custom dashboard is at `/admin-dashboard/login/`; Django admin is at
+   `/admin/`. Uploaded media needs persistent storage or object storage because
+   Railway web-service files are not durable across redeploys.
 
 Admin
 -----

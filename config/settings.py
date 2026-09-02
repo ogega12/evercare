@@ -11,7 +11,7 @@ import os
 from django.core.management.utils import get_random_secret_key
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
-
+import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
@@ -20,7 +20,7 @@ ENV = os.environ
 def env_bool(name, default=False):
     return ENV.get(name, str(default)).strip().lower() in {'1', 'true', 'yes', 'on'}
 
-DEBUG = env_bool('DEBUG', True)
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 SECRET_KEY = ENV.get('SECRET_KEY')
 if not SECRET_KEY:
     if DEBUG:
@@ -28,9 +28,13 @@ if not SECRET_KEY:
     else:
         raise ImproperlyConfigured('SECRET_KEY must be set when DEBUG=False.')
 
-ALLOWED_HOSTS = [host.strip() for host in ENV.get(
-    'ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver'
-).split(',') if host.strip()]
+ALLOWED_HOSTS = [
+    host.strip() for host in os.getenv(
+        'ALLOWED_HOSTS',
+        '.up.railway.app,evercare-garage-production.up.railway.app,.onrender.com',
+    ).split(',')
+    if host.strip()
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -154,7 +158,10 @@ if not DEBUG:
     SECURE_REFERRER_POLICY = ENV.get('SECURE_REFERRER_POLICY', 'same-origin')
 
 CSRF_TRUSTED_ORIGINS = [
-    origin.strip() for origin in ENV.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+    origin.strip() for origin in os.getenv(
+        'CSRF_TRUSTED_ORIGINS',
+        'https://evercare-garage-production.up.railway.app,https://*.onrender.com,https://*.up.railway.app',
+    ).split(',')
     if origin.strip()
 ]
 
