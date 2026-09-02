@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Evercare Garage kenya{% endblock %}
+
+{% block content %}
+<section class="page-banner rounded-4 mb-5">
+  <div class="container py-5">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <p class="text-warning fw-semibold text-uppercase letter-spacing">About us</p>
+        <h1 class="display-5 fw-bold text-white mb-3">A workshop built around trust, technical excellence and honest advice.</h1>
+      </div>
+      <div class="col-lg-5 text-lg-end">
+        <a href="{% url 'garage:booking' %}" class="btn btn-warning btn-lg">Schedule a service</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <img src="{% static 'images/about-workshop.svg' %}" class="img-fluid rounded-4 shadow" alt="Evercare Garage workshop">
+      </div>
+      <div class="col-lg-6">
+        <p class="text-warning fw-semibold text-uppercase letter-spacing">Our story</p>
+        <h2 class="section-title">More than a garage — a long-term partner for your vehicle.</h2>
+        <p class="text-muted">Evercare Garage was founded to offer dependable, customer-first automotive service for drivers who want quality repairs without the stress. Over the years, we have grown from a small workshop into a trusted garage serving individuals, families, and commercial clients across Nairobi.</p>
+        <p class="text-muted">We combine experienced workmanship, modern diagnostics, and a practical understanding of the everyday demands drivers face. Whether you need a routine check-up or a more complex repair, our team focuses on accurate diagnosis, transparent communication, and lasting value.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-lg-8 mx-auto">
+        <p class="text-warning fw-semibold text-uppercase letter-spacing">Our values</p>
+        <h2 class="section-title">The standards we work by</h2>
+      </div>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4">
+          <div class="feature-icon mb-3">01</div>
+          <h5>Integrity</h5>
+          <p class="text-muted mb-0">We explain issues clearly, recommend only what is needed, and keep pricing straightforward.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4">
+          <div class="feature-icon mb-3">02</div>
+          <h5>Precision</h5>
+          <p class="text-muted mb-0">Every inspection and repair is handled with attention to detail and careful workmanship.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4">
+          <div class="feature-icon mb-3">03</div>
+          <h5>Reliability</h5>
+          <p class="text-muted mb-0">We keep commitments, communicate timelines clearly, and stand behind the work we do.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-5">
+        <p class="text-warning fw-semibold text-uppercase letter-spacing">How we work</p>
+        <h2 class="section-title">Simple, transparent process</h2>
+        <ol class="custom-list">
+          <li><strong>Book or call in</strong><br><span class="text-muted">Tell us what the vehicle needs or request a consultation.</span></li>
+          <li><strong>Inspection and diagnosis</strong><br><span class="text-muted">We assess the issue, explain findings, and recommend the best next step.</span></li>
+          <li><strong>Repair and follow-up</strong><br><span class="text-muted">Once approved, we complete the work and provide after-service guidance.</span></li>
+        </ol>
+      </div>
+      <div class="col-lg-7">
+        <div class="stats-grid three-columns">
+          <div class="stat-box">
+            <div class="counter">8+</div>
+            <span>years in service</span>
+          </div>
+          <div class="stat-box">
+            <div class="counter">18</div>
+            <span>technicians</span>
+          </div>
+          
+          <div class="stat-box">
+            <div class="counter">3000</div>
+            <span>vehicles served</span>
+          </div>
+          <div class="stat-box">
+            <div class="counter">99%</div>
+            <span>customer satisfaction</span>
+          </div>
+          <div class="stat-box">
+            <div class="counter">24/7</div>
+            <span>response for urgent enquiries</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-strip text-center py-5">
+  <div class="container">
+    <h3 class="text-white mb-3">Let’s keep your vehicle in peak condition.</h3>
+    <p class="text-white-50 mb-4">Speak with our team and book a service that matches your schedule and budget.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{% url 'garage:contact' %}" class="btn btn-warning btn-lg">Contact us</a>
+      <button type="button" class="btn btn-outline-light btn-lg" onclick="openWhatsApp()">WhatsApp us</button>
+    </div>
+  </div>
+</section>
+{% endblock %}

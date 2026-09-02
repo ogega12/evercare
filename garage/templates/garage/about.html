@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}About Us — Evercare Garage{% endblock %}
+{% block content %}
+<section class="py-5">
+  <div class="row">
+    <div class="col-md-6">
+      <h2>About Evercare Garage</h2>
+      <p>Established in Nairobi, Evercare Garage has been providing high quality vehicle servicing and repairs to customers across Kenya. Our mission is to ensure roadworthy, safe, and reliable vehicles.</p>
+      <h4>Mission</h4>
+      <p>To deliver reliable and transparent vehicle care that keeps our customers safe on the road.</p>
+      <h4>Vision</h4>
+      <p>To be the leading trusted garage in Kenya known for professionalism and technical excellence.</p>
+    </div>
+    <div class="col-md-6">
+      <img src="{% static 'images/about-workshop.jpg' %}" alt="Workshop" class="img-fluid rounded shadow-sm">
+    </div>
+  </div>
+</section>
+
+<section class="py-4 bg-light rounded">
+  <h3>Our Team & Equipment</h3>
+  <p>Experienced technicians, modern diagnostic tools and a customer-first process. We ensure transparent quotes and work updates.</p>
+  <ul>
+    <li>Experienced technicians</li>
+    <li>Modern diagnostics</li>
+    <li>Genuine spare parts</li>
+  </ul>
+</section>
+
+{% endblock %}

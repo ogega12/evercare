@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Offers — Evercare Garage{% endblock %}
+{% block content %}
+<h1>Current Offers</h1>
+<div class="row">
+  {% for promo in promotions %}
+  <div class="col-md-4 mb-3">
+    <div class="card h-100">
+      {% if promo.image %}
+      <img src="{{ promo.image.url }}" class="card-img-top" alt="{{ promo.title }}">
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">{{ promo.title }}</h5>
+        <p>{{ promo.description|truncatewords:30 }}</p>
+        {% if promo.discount %}
+        <p class="text-success">Discount: {{ promo.discount }}%</p>
+        {% endif %}
+        <p class="text-primary">Price: {% if promo.price %}KES {{ promo.price }}{% else %}Contact us{% endif %}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

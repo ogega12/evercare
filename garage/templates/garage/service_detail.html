@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{{ service.name }} — Evercare Garage{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    {% if service.image %}
+    <img src="{{ service.image.url }}" class="img-fluid rounded" alt="{{ service.name }}">
+    {% else %}
+    <img src="{% static 'images/service-placeholder.jpg' %}" class="img-fluid rounded" alt="{{ service.name }}">
+    {% endif %}
+  </div>
+  <div class="col-md-6">
+    <h1>{{ service.name }}</h1>
+    <p>{{ service.description }}</p>
+    {% if service.price %}
+    <p class="h4 text-primary">Estimated from KES {{ service.price }}</p>
+    {% endif %}
+    <div class="mt-4">
+      <a href="{% url 'garage:booking' %}" class="btn btn-warning me-2">Book This Service</a>
+      <a href="{% url 'garage:contact' %}" class="btn btn-outline-secondary me-2">Get a Quote</a>
+      <a href="#" class="btn btn-success" onclick="openWhatsApp();">WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<hr>
+<h4>Related services</h4>
+<div class="row">
+  {% for s in service._meta.model.objects.exclude(pk=service.pk)[:3] %}
+  <div class="col-md-4">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5>{{ s.name }}</h5>
+        <p>{{ s.short_description|truncatewords:20 }}</p>
+        <a href="{{ s.get_absolute_url }}" class="btn btn-sm btn-outline-primary">View</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

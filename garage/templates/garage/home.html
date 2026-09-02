@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}Home — Evercare Garage{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="py-5 text-light" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{% static "images/hero.jpg" %}') center/cover no-repeat; border-radius: 8px;"> 
+  <div class="container py-5">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <h1 class="display-5">Professional Automotive Care You Can Trust</h1>
+        <p class="lead">Reliable vehicle servicing, diagnostics and repairs performed by experienced technicians using modern equipment.</p>
+        <div class="mt-4">
+          <a class="btn btn-warning btn-lg me-2" href="{% url 'garage:booking' %}">Book a Service</a>
+          <a class="btn btn-outline-light btn-lg me-2" href="{% url 'garage:contact' %}">Get a Quote</a>
+          <a class="btn btn-success btn-lg" href="#" onclick="openWhatsApp();">WhatsApp Us</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured services -->
+<section class="py-5">
+  <h2 class="mb-4">Featured Services</h2>
+  <div class="row">
+    {% for s in featured_services %}
+    <div class="col-md-3 mb-3">
+      <div class="card h-100 shadow-sm">
+        {% if s.image %}
+        <img src="{{ s.image.url }}" class="card-img-top" alt="{{ s.name }}">
+        {% else %}
+        <img src="{% static 'images/service-placeholder.jpg' %}" class="card-img-top" alt="{{ s.name }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ s.name }}</h5>
+          <p class="card-text">{{ s.short_description }}</p>
+          <a href="{{ s.get_absolute_url }}" class="btn btn-sm btn-outline-primary">View</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+      <p>No featured services yet. Add them via the admin.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Why choose us & counters -->
+<section class="py-5 bg-light rounded">
+  <div class="row">
+    <div class="col-md-6">
+      <h3>Why Choose Us</h3>
+      <ul>
+        <li>Experienced certified technicians</li>
+        <li>Modern diagnostic equipment</li>
+        <li>Transparent pricing and honest advice</li>
+        <li>Quality parts and warranties</li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <div class="row text-center">
+        <div class="col-6">
+          <h2 class="counter">{{ stats.years }}</h2>
+          <p>Years</p>
+        </div>
+        <div class="col-6">
+          <h2 class="counter">{{ stats.vehicles }}</h2>
+          <p>Vehicles Serviced</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery preview -->
+<section class="py-5">
+  <h3>Gallery Preview</h3>
+  <div class="row">
+    {% for img in gallery_images %}
+    <div class="col-sm-6 col-md-3 mb-3">
+      <a href="{{ img.image.url }}" data-bs-toggle="modal" data-bs-target="#lightbox-{{ forloop.counter }}">
+        <img src="{{ img.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ img.caption }}">
+      </a>
+      <!-- Lightbox modal -->
+      <div class="modal fade" id="lightbox-{{ forloop.counter }}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content bg-transparent border-0">
+            <img src="{{ img.image.url }}" class="img-fluid rounded" alt="{{ img.caption }}">
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5 bg-white">
+  <h3>Customer Testimonials</h3>
+  <div class="row">
+    {% for t in testimonials %}
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <p class="card-text">"{{ t.review|truncatewords:30 }}"</p>
+          <p class="mb-0"><strong>{{ t.name }}</strong> — {{ t.rating }} / 5</p>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>No testimonials yet.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5 text-center rounded" style="background: linear-gradient(90deg,#111, #2a2a2a);">
+  <h3 class="text-light">Ready to get your vehicle serviced by professionals?</h3>
+  <a class="btn btn-lg btn-warning mt-3" href="{% url 'garage:booking' %}">Book a Service</a>
+</section>
+
+{% endblock %}

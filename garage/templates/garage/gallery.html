@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Gallery — Evercare Garage{% endblock %}
+{% block content %}
+<h1>Gallery</h1>
+<div class="row">
+  {% for img in images %}
+  <div class="col-sm-6 col-md-4 mb-3">
+    <a href="{{ img.image.url }}" data-bs-toggle="modal" data-bs-target="#img-{{ forloop.counter }}">
+      <img src="{{ img.image.url }}" class="img-fluid rounded" alt="{{ img.caption }}">
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

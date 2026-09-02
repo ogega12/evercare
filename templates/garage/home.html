@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Evercare Garage | Professional Car Care in Nairobi{% endblock %}
+
+{% block content %}
+<section class="hero-section position-relative overflow-hidden rounded-4 mb-5">
+  <div class="hero-overlay"></div>
+  <div class="container position-relative py-5">
+    <div class="row align-items-center g-4 py-5">
+      <div class="col-lg-7">
+        <span class="badge text-bg-warning px-3 py-2 rounded-pill mb-3">Trusted vehicle care since 2018</span>
+        <h1 class="display-4 fw-bold text-white mb-3">Keep your vehicle running at its best.</h1>
+        <p class="lead text-white-50 mb-4">From routine servicing and diagnostics to bodywork and detailing, Evercare Garage delivers reliable auto care backed by transparent pricing and experienced technicians.</p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{% url 'garage:booking' %}" class="btn btn-warning btn-lg px-4">Book a Service</a>
+          <button type="button" class="btn btn-outline-light btn-lg px-4" onclick="openWhatsApp()">Chat on WhatsApp</button>
+        </div>
+        <div class="d-flex flex-wrap gap-4 mt-4 text-white-50 small">
+          <span><strong class="text-white">10+</strong> years experience</span>
+          <span><strong class="text-white">12k+</strong> services completed</span>
+          <span><strong class="text-white">4.9/5</strong> rated by clients</span>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="hero-card card border-0 shadow-lg">
+          <div class="card-body p-4">
+            <h3 class="mb-3">Need fast help?</h3>
+            <ul class="list-unstyled mb-4">
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-warning me-2"></i>Same-day diagnostics</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-warning me-2"></i>Qualified technicians</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-warning me-2"></i>Genuine parts and advice</li>
+            </ul>
+            <div class="d-grid gap-2">
+              <a href="{% url 'garage:services' %}" class="btn btn-dark">Explore services</a>
+              <a href="tel:+254723900873" class="btn btn-outline-dark">Call +254 723 900 873  </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-lg-8 mx-auto">
+        <p class="text-warning fw-semibold text-uppercase letter-spacing">What we offer</p>
+        <h2 class="section-title">Complete car care for every journey</h2>
+      </div>
+    </div>
+    <div class="row g-4">
+      {% for service in featured_services %}
+      <div class="col-md-6 col-xl-3">
+        <div class="card h-100 service-card border-0 shadow-sm">
+          <img src="{% static service.default_image %}" class="card-img-top" alt="{{ service.name }}" style="height: 210px; object-fit: cover;">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ service.name }}</h5>
+            <p class="text-muted flex-grow-1">{{ service.short_description|default:service.description|truncatechars:110 }}</p>
+            {% if service.price %}<p class="fw-bold text-warning mb-3">From KSh {{ service.price }}</p>{% endif %}
+            <a href="{{ service.get_absolute_url }}" class="btn btn-outline-dark mt-auto">Learn more</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12"><div class="alert alert-light border">No featured services yet. Add services from the admin.</div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-dark text-light">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <p class="text-warning fw-semibold text-uppercase letter-spacing">Why clients choose us</p>
+        <h2 class="section-title text-white">Transparent service, honest advice, dependable results.</h2>
+        <div class="row g-3 mt-2">
+          <div class="col-md-6">
+            <div class="feature-box">
+              <h5>Certified technicians</h5>
+              <p>Skilled specialists who diagnose issues accurately and repair them right the first time.</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="feature-box">
+              <h5>Modern equipment</h5>
+              <p>We invest in advanced diagnostics and workshop tools for faster, more precise work.</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="feature-box">
+              <h5>Fast turnaround</h5>
+              <p>Efficient scheduling and clear communication keep delays to a minimum.</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="feature-box">
+              <h5>Customer-first approach</h5>
+              <p>Simple explanations, fair pricing, and service that keeps you informed every step of the way.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="stats-grid">
+          {% for key, value in stats.items %}
+          <div class="stat-box">
+            <div class="counter">{{ value }}</div>
+            <span>{{ key|title }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center mb-5">
+      <div class="col-lg-8">
+        <p class="text-warning fw-semibold text-uppercase letter-spacing">Current offers</p>
+        <h2 class="section-title">Seasonal value for smarter car ownership</h2>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <a href="{% url 'garage:offers' %}" class="btn btn-outline-dark">View all offers</a>
+      </div>
+    </div>
+    <div class="row g-4">
+      {% for promo in promotions %}
+      <div class="col-lg-4">
+        <div class="card promotion-card h-100 border-0 shadow-sm">
+          <img src="{% if promo.image %}{{ promo.image.url }}{% else %}{% static 'images/service-placeholder.svg' %}{% endif %}" class="card-img-top" alt="{{ promo.title }}" style="height: 220px; object-fit: cover;">
+          <div class="card-body">
+            <span class="badge bg-warning text-dark mb-2">{{ promo.discount|default:'Special Offer' }}{% if promo.discount %} off{% endif %}</span>
+            <h5>{{ promo.title }}</h5>
+            <p class="text-muted">{{ promo.description|truncatechars:120 }}</p>
+            <div class="small text-muted">{{ promo.start_date }} to {{ promo.end_date }}</div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12"><div class="alert alert-light border">No active promotions right now. Check back soon.</div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row mb-5 align-items-center">
+      <div class="col-lg-8">
+        <p class="text-warning fw-semibold text-uppercase letter-spacing">Client feedback</p>
+        <h2 class="section-title">Good service speaks for itself</h2>
+      </div>
+    </div>
+    <div class="row g-4">
+      {% for testimonial in testimonials %}
+      <div class="col-lg-4">
+        <div class="card h-100 border-0 shadow-sm testimonial-card">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+              <div class="rounded-circle avatar me-3">
+                {% if testimonial.image %}<img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}">{% else %}{{ testimonial.name|slice:':1'|upper }}{% endif %}
+              </div>
+              <div>
+                <h6 class="mb-0">{{ testimonial.name }}</h6>
+                <div class="text-warning small">{% for i in '12345' %}{% if forloop.counter <= testimonial.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+              </div>
+            </div>
+            <p class="text-muted mb-0">“{{ testimonial.review }}”</p>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12"><div class="alert alert-light border">Testimonials will appear here once client reviews are added.</div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <div class="gallery-preview">
+          {% for image in gallery_images %}
+            {% if forloop.counter <= 4 %}
+            <img src="{% if image.image %}{{ image.image.url }}{% else %}{% static 'images/service-placeholder.svg' %}{% endif %}" alt="{{ image.title }}" class="preview-image">
+            {% endif %}
+          {% empty %}
+          <img src="{% static 'images/service-placeholder.svg' %}" alt="Garage preview" class="preview-image">
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <p class="text-warning fw-semibold text-uppercase letter-spacing">Our workshop</p>
+        <h2 class="section-title">Quality work you can see and trust</h2>
+        <p class="text-muted">From regular maintenance to complex repairs, we fix vehicles with care and attention to detail. Browse our gallery to see the workshop environment and the type of work we handle.</p>
+        <a href="{% url 'garage:gallery' %}" class="btn btn-dark">See gallery</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-strip text-center py-5">
+  <div class="container">
+    <h3 class="text-white mb-3">Ready to service your vehicle?</h3>
+    <p class="text-white-50 mb-4">Speak to our service team today and book a visit that fits your schedule.</p>
+    <div class="d-flex justify-content-center flex-wrap gap-3">
+      <a href="{% url 'garage:booking' %}" class="btn btn-warning btn-lg">Book now</a>
+      <button type="button" class="btn btn-outline-light btn-lg" onclick="openWhatsApp()">WhatsApp us</button>
+    </div>
+  </div>
+</section>
+{% endblock %}

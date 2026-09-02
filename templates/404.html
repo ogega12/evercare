@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}Page not found — Evercare Garage{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <h1>404 — Page not found</h1>
+  <p>Sorry, we couldn't find that page. Return to <a href="{% url 'garage:home' %}">home</a>.</p>
+</div>
+{% endblock %}

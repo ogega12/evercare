@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Services — Evercare Garage{% endblock %}
+{% block content %}
+<h1 class="mb-4">Our Services</h1>
+<div class="row">
+  {% for s in services %}
+  <div class="col-md-4 mb-3">
+    <div class="card h-100 shadow-sm">
+      {% if s.image %}
+      <img src="{{ s.image.url }}" class="card-img-top" alt="{{ s.name }}">
+      {% else %}
+      <img src="{% static 'images/service-placeholder.jpg' %}" class="card-img-top" alt="{{ s.name }}">
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">{{ s.name }}</h5>
+        <p class="card-text">{{ s.short_description }}</p>
+        {% if s.price %}
+        <p class="text-primary">From KES {{ s.price }}</p>
+        {% endif %}
+        <a href="{{ s.get_absolute_url }}" class="btn btn-sm btn-outline-primary">Book This Service</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p>No services have been added yet. Use admin to add services.</p>
+  {% endfor %}
+</div>
+{% endblock %}

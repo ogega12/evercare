@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Book a Service | Evercare Garage{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+          <p class="text-warning fw-semibold text-uppercase letter-spacing">Booking</p>
+          <h1 class="display-6 fw-bold mb-3">Request a service appointment</h1>
+          <p class="text-muted mb-4">Tell us about your vehicle and the service you need, and we’ll contact you with the next available slot.</p>
+          <ul class="list-unstyled service-highlights mb-0">
+            <li><i class="bi bi-check-circle-fill text-warning me-2"></i>Fast response from our booking team</li>
+            <li><i class="bi bi-check-circle-fill text-warning me-2"></i>Flexible scheduling</li>
+            <li><i class="bi bi-check-circle-fill text-warning me-2"></i>Transparent pricing and service plan</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+          <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <div class="row g-3">
+              {% for field in form %}
+              <div class="col-md-6">
+                <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                {{ field.errors }}
+                {{ field }}
+              </div>
+              {% endfor %}
+            </div>
+            <div class="mt-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <button type="submit" class="btn btn-warning btn-lg">Send booking request</button>
+              <a href="tel:+254723900873" class="text-dark fw-semibold">Call +254 723 900 873</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Garage Gallery | Evercare Garage{% endblock %}
+
+{% block content %}
+<section class="page-banner rounded-4 mb-5">
+  <div class="container py-5 text-center">
+    <p class="text-warning fw-semibold text-uppercase letter-spacing">Gallery</p>
+    <h1 class="display-6 fw-bold text-white mb-0">A look inside our workshop and service quality.</h1>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      {% for image in images %}
+      <div class="col-md-6 col-lg-4">
+        <div class="gallery-item overflow-hidden rounded-4 shadow-sm">
+          <img src="{% if image.image %}{{ image.image.url }}{% else %}{% static 'images/service-placeholder.svg' %}{% endif %}" alt="{{ image.title|default:'Garage work' }}">
+          {% if image.caption %}<div class="caption">{{ image.caption }}</div>{% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12"><div class="alert alert-light border">Gallery images will appear here once they are uploaded in the admin area.</div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

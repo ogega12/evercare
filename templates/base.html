@@ -1,0 +1,98 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Evercare Garage — Professional Automotive Care{% endblock %}</title>
+  <meta name="description" content="Reliable vehicle servicing, diagnostics and repairs performed by experienced technicians in Kenya.">
+  <meta property="og:title" content="Evercare Garage — Professional Automotive Care" />
+  <meta property="og:description" content="Reliable vehicle servicing, diagnostics and repairs performed by experienced technicians in Kenya." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'garage:home' %}">
+        <img src="{% static 'images/logo.svg' %}" alt="Evercare Garage logo" width="40" height="40" class="me-2 rounded">
+        <strong>Evercare Garage</strong>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="{% url 'garage:home' %}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'garage:about' %}">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'garage:services' %}">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'garage:gallery' %}">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'garage:offers' %}">Offers</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'garage:contact' %}">Contact</a></li>
+          {% if user.is_staff %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'garage:admin_dashboard' %}">Admin</a></li>
+          {% endif %}
+        </ul>
+        <a class="btn btn-warning ms-3 rounded" href="{% url 'garage:booking' %}">Book a Service</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-4">
+    <div class="container">
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success" role="alert">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <footer class="bg-dark text-light py-5 mt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h5>Evercare Garage</h5>
+          <p>Trusted automotive care in Nairobi, Kenya. Servicing, diagnostics and repairs with a customer-first approach.</p>
+        </div>
+        <div class="col-md-2">
+          <h6>Quick Links</h6>
+          <ul class="list-unstyled">
+            <li><a href="{% url 'garage:services' %}" class="text-light">Services</a></li>
+            <li><a href="{% url 'garage:gallery' %}" class="text-light">Gallery</a></li>
+            <li><a href="{% url 'garage:offers' %}" class="text-light">Offers</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h6>Contact</h6>
+          <p>Phone: <a href="tel:+254723900873" class="text-light">0723900873</a> / <a href="tel:+254733815798" class="text-light">0733815798</a><br>
+          Email: <a href="mailto:evercare18centre@gmail.com" class="text-light">evercare18centre@gmail.com</a></p>
+        </div>
+        <div class="col-md-3">
+          <h6>Opening Hours</h6>
+          <p>Mon - Fri: 8:00 - 18:00<br>Sat: 8:00 - 14:00<br>Sun: Closed</p>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <p class="mb-2"><strong>Location:</strong></p>
+        <a href="https://share.google/q7mktLTtVj2Je5HIt" target="_blank" rel="noopener" class="text-warning">https://share.google/q7mktLTtVj2Je5HIt</a>
+      </div>
+      <div class="text-center mt-3">&copy; {% now "Y" %} Evercare Garage. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // expose minimal site settings to client-side scripts
+    window.EVERCARE = {
+          whatsapp: '{{ WHATSAPP_NUMBER|default:"+254723900873" }}',
+      google_maps_key: '{{ GOOGLE_MAPS_API_KEY|default:"" }}'
+    };
+  </script>
+  <script src="{% static 'js/script.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

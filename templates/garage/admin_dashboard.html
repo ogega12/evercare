@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <div class="text-uppercase text-muted letter-spacing">Admin panel</div>
+    <h1 class="mb-0">Customer dashboard</h1>
+  </div>
+  <form method="post" action="{% url 'garage:admin_logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-dark">Log out</button>
+  </form>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="dashboard-stat">
+      <div class="value">{{ total_testimonials }}</div>
+      <div class="label">Total Reviews</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="dashboard-stat">
+      <div class="value">{{ pending_reviews }}</div>
+      <div class="label">Pending Reviews</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="dashboard-stat">
+      <div class="value">{{ open_bookings }}</div>
+      <div class="label">Open Bookings</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="dashboard-stat">
+      <div class="value">{{ pending_interactions }}</div>
+      <div class="label">Unresolved Messages</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="dashboard-card table-panel">
+      <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Customer reviews</h5>
+        <span class="badge badge-soft">{{ pending_reviews }} pending</span>
+      </div>
+      <div class="list-group list-group-flush">
+        {% for review in testimonials %}
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div>
+                <h6 class="mb-1">{{ review.name }}</h6>
+                <div class="text-muted small">Rating: {{ review.rating }}/5</div>
+              </div>
+              {% if review.approved %}
+                <span class="badge badge-success-soft">Approved</span>
+              {% else %}
+                <span class="badge badge-secondary-soft">Pending</span>
+              {% endif %}
+            </div>
+            <p class="mt-3 mb-2">{{ review.review }}</p>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <small class="text-muted">{{ review.date }}</small>
+              <div class="d-flex gap-2">
+                <form method="post" action="{% url 'garage:admin_dashboard' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="testimonial_id" value="{{ review.id }}">
+                  <button type="submit" class="btn btn-sm {% if review.approved %}btn-outline-dark{% else %}btn-warning{% endif %}">
+                    {% if review.approved %}Hide from site{% else %}Approve review{% endif %}
+                  </button>
+                </form>
+                <button type="button" class="btn btn-sm btn-outline-dark" data-bs-toggle="collapse" data-bs-target="#review-edit-{{ review.id }}">Edit</button>
+                <form method="post" action="{% url 'garage:admin_dashboard' %}" onsubmit="return confirm('Delete this review?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="review_delete_id" value="{{ review.id }}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+              </div>
+            </div>
+            <div class="collapse mt-3" id="review-edit-{{ review.id }}">
+              <form method="post" action="{% url 'garage:admin_dashboard' %}">
+                {% csrf_token %}
+                <input type="hidden" name="review_edit_id" value="{{ review.id }}">
+                <div class="row g-2">
+                  <div class="col-md-4">
+                    <label class="form-label small">Name</label>
+                    <input type="text" name="review_name" value="{{ review.name }}" required>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label small">Rating</label>
+                    <select name="review_rating" required>
+                      <option value="1" {% if review.rating == 1 %}selected{% endif %}>1</option>
+                      <option value="2" {% if review.rating == 2 %}selected{% endif %}>2</option>
+                      <option value="3" {% if review.rating == 3 %}selected{% endif %}>3</option>
+                      <option value="4" {% if review.rating == 4 %}selected{% endif %}>4</option>
+                      <option value="5" {% if review.rating == 5 %}selected{% endif %}>5</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label small">Review</label>
+                    <textarea name="review_text" rows="3" required>{{ review.review }}</textarea>
+                  </div>
+                </div>
+                <div class="mt-2 text-end">
+                  <button type="submit" class="btn btn-warning btn-sm">Save changes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        {% empty %}
+          <div class="list-group-item text-muted">No customer reviews have been submitted yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="dashboard-card table-panel">
+      <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Booking enquiries</h5>
+      </div>
+      <div class="list-group list-group-flush">
+        {% for booking in bookings %}
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center gap-3">
+              <div>
+                <h6 class="mb-1">{{ booking.full_name }}</h6>
+                <small class="text-muted">{{ booking.service.name|default:booking.custom_service|default:'General enquiry' }}</small>
+              </div>
+              <span class="badge badge-soft">{{ booking.get_status_display }}</span>
+            </div>
+            <p class="mt-2 mb-2 small text-muted">{{ booking.phone }} · {{ booking.email|default:'No email' }}</p>
+            <form method="post" action="{% url 'garage:admin_dashboard' %}">
+              {% csrf_token %}
+              <input type="hidden" name="booking_id" value="{{ booking.id }}">
+              <div class="d-flex gap-2">
+                <select name="status" class="form-select form-select-sm">
+                  {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if booking.status == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-sm btn-warning">Update</button>
+              </div>
+            </form>
+          </div>
+        {% empty %}
+          <div class="list-group-item text-muted">No customer bookings have been received yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-card table-panel mt-4">
+  <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Customer interactions</h5>
+    <span class="badge badge-soft">{{ pending_interactions }} unresolved</span>
+  </div>
+  <div class="list-group list-group-flush">
+    {% for message in contact_messages %}
+      <div class="list-group-item">
+        <div class="d-flex justify-content-between align-items-start gap-3">
+          <div>
+            <h6 class="mb-1">{{ message.name }}</h6>
+            <div class="text-muted small">{{ message.email }} · {{ message.subject|default:'General enquiry' }}</div>
+          </div>
+          {% if message.handled %}
+            <span class="badge badge-success-soft">Handled</span>
+          {% else %}
+            <span class="badge badge-secondary-soft">Open</span>
+          {% endif %}
+        </div>
+        <p class="mt-3 mb-2">{{ message.message }}</p>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <small class="text-muted">{{ message.created_at }}</small>
+      <div class="d-flex gap-2">
+        <form method="post" action="{% url 'garage:admin_dashboard' %}">
+          {% csrf_token %}
+          <input type="hidden" name="contact_id" value="{{ message.id }}">
+          <button type="submit" class="btn btn-sm {% if message.handled %}btn-outline-dark{% else %}btn-success{% endif %}">
+            {% if message.handled %}Reopen{% else %}Mark handled{% endif %}
+          </button>
+        </form>
+        <button type="button" class="btn btn-sm btn-outline-dark" data-bs-toggle="collapse" data-bs-target="#contact-edit-{{ message.id }}">Edit</button>
+        <form method="post" action="{% url 'garage:admin_dashboard' %}" onsubmit="return confirm('Delete this customer interaction?');">
+          {% csrf_token %}
+          <input type="hidden" name="contact_delete_id" value="{{ message.id }}">
+          <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+    <div class="collapse mt-3" id="contact-edit-{{ message.id }}">
+      <form method="post" action="{% url 'garage:admin_dashboard' %}">
+        {% csrf_token %}
+        <input type="hidden" name="contact_edit_id" value="{{ message.id }}">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Name</label>
+            <input type="text" name="contact_name" value="{{ message.name }}" required>
+          </div>
+          <div class="col-md-5">
+            <label class="form-label small">Email</label>
+            <input type="email" name="contact_email" value="{{ message.email }}" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Subject</label>
+            <input type="text" name="contact_subject" value="{{ message.subject }}">
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Message</label>
+            <textarea name="contact_message" rows="3" required>{{ message.message }}</textarea>
+          </div>
+        </div>
+        <div class="mt-2 text-end">
+          <button type="submit" class="btn btn-success btn-sm">Save changes</button>
+        </div>
+      </form>
+    </div>
+      </div>
+    {% empty %}
+      <div class="list-group-item text-muted">No customer interactions have been received yet.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

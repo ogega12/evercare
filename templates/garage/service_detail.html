@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ service.name }} | Evercare Garage{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'garage:home' %}" class="text-dark">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'garage:services' %}" class="text-dark">Services</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ service.name }}</li>
+      </ol>
+    </nav>
+
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-7">
+        <img src="{% static service.default_image %}" class="img-fluid rounded-4 shadow-sm mb-4" alt="{{ service.name }}" style="max-height: 520px; width: 100%; object-fit: cover;">
+        <h1 class="display-6 fw-bold mb-3">{{ service.name }}</h1>
+        {% if service.price %}<p class="h4 text-warning mb-4">From KSh {{ service.price }}</p>{% endif %}
+        <div class="text-muted service-description">{{ service.description|linebreaksbr }}</div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 88px;">
+          <div class="card-body p-4">
+            <h4 class="mb-3">Book this service</h4>
+            <p class="text-muted">Need help with this service? Our team can arrange a check-up or repair based on your vehicle and schedule.</p>
+            <div class="d-grid gap-2 mb-4">
+              <a href="{% url 'garage:booking' %}?service={{ service.id }}" class="btn btn-warning btn-lg">Request a booking</a>
+              <button type="button" class="btn btn-outline-dark" onclick="openWhatsApp()">WhatsApp us</button>
+            </div>
+            <ul class="list-unstyled service-highlights mb-0">
+              <li><i class="bi bi-check-circle-fill text-warning me-2"></i>Inspection and diagnosis</li>
+              <li><i class="bi bi-check-circle-fill text-warning me-2"></i>Expert recommendations</li>
+              <li><i class="bi bi-check-circle-fill text-warning me-2"></i>Competitive rates</li>
+              <li><i class="bi bi-check-circle-fill text-warning me-2"></i>After-service support</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if related_services %}
+    <div class="mt-5">
+      <h3 class="mb-4">Related services</h3>
+      <div class="row g-4">
+        {% for related in related_services %}
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm h-100 service-card">
+            <img src="{% static related.default_image %}" class="card-img-top" alt="{{ related.name }}" style="height: 180px; object-fit: cover;">
+            <div class="card-body">
+              <h6>{{ related.name }}</h6>
+              <p class="text-muted small">{{ related.short_description|default:related.description|truncatechars:100 }}</p>
+              <a href="{{ related.get_absolute_url }}" class="btn btn-sm btn-outline-dark">View service</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
