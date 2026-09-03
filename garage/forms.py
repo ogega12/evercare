@@ -1,13 +1,29 @@
 from django import forms
+from django.db import connection, ProgrammingError, OperationalError
 from .models import Booking, ContactMessage, Service
+
+
+def _service_queryset():
+    try:
+        if Service._meta.db_table not in connection.introspection.table_names():
+            return Service.objects.none()
+    except (ProgrammingError, OperationalError):
+        return Service.objects.none()
+    return Service.objects.order_by('name')
+
 
 class BookingForm(forms.ModelForm):
     service = forms.ModelChoiceField(
-        queryset=Service.objects.order_by('name'),
+        queryset=_service_queryset(),
         empty_label='Select a service',
         required=False,
         label='Choose a service'
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['service'].queryset = _service_queryset()
+
     custom_service = forms.CharField(
         max_length=200,
         required=False,

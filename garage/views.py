@@ -8,19 +8,42 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from django.conf import settings
+from django.db import connection, ProgrammingError, OperationalError
 from .models import Service, Promotion, GalleryImage, Testimonial, Booking, ContactMessage
 from .forms import BookingForm, ContactForm
+
+
+def _table_exists(model):
+    try:
+        return model._meta.db_table in connection.introspection.table_names()
+    except (ProgrammingError, OperationalError):
+        return False
+
+
+def _safe_queryset(model, *, filter_kwargs=None, exclude_kwargs=None, order_by=None):
+    if not _table_exists(model):
+        return model.objects.none()
+
+    queryset = model.objects.all()
+    if filter_kwargs:
+        queryset = queryset.filter(**filter_kwargs)
+    if exclude_kwargs:
+        queryset = queryset.exclude(**exclude_kwargs)
+    if order_by:
+        queryset = queryset.order_by(*order_by) if isinstance(order_by, (list, tuple)) else queryset.order_by(order_by)
+    return queryset
+
 
 class HomeView(TemplateView):
     template_name = 'garage/home.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['services'] = Service.objects.all()[:6]
-        context['featured_services'] = Service.objects.filter(featured=True)[:4]
-        context['promotions'] = Promotion.objects.filter(active=True)
-        context['gallery_images'] = GalleryImage.objects.all()[:6]
-        context['testimonials'] = Testimonial.objects.filter(approved=True)[:5]
+        context['services'] = _safe_queryset(Service)[:6]
+        context['featured_services'] = _safe_queryset(Service, filter_kwargs={'featured': True})[:4]
+        context['promotions'] = _safe_queryset(Promotion, filter_kwargs={'active': True})
+        context['gallery_images'] = _safe_queryset(GalleryImage)[:6]
+        context['testimonials'] = _safe_queryset(Testimonial, filter_kwargs={'approved': True})[:5]
         # Example counters
         context['stats'] = {
             'years': 10,
@@ -40,6 +63,10 @@ class ServiceListView(ListView):
     template_name = 'garage/services.html'
     context_object_name = 'services'
 
+    def get_queryset(self):
+        return _safe_queryset(Service, order_by=['name'])
+
+
 class ServiceDetailView(DetailView):
     model = Service
     template_name = 'garage/service_detail.html'
@@ -47,10 +74,13 @@ class ServiceDetailView(DetailView):
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
+    def get_queryset(self):
+        return _safe_queryset(Service)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         service = self.object
-        context['related_services'] = Service.objects.exclude(pk=service.pk)[:3]
+        context['related_services'] = _safe_queryset(Service, exclude_kwargs={'pk': service.pk})[:3]
         return context
 
 class GalleryView(ListView):
@@ -58,10 +88,17 @@ class GalleryView(ListView):
     template_name = 'garage/gallery.html'
     context_object_name = 'images'
 
+    def get_queryset(self):
+        return _safe_queryset(GalleryImage, order_by=['-uploaded_at'])
+
+
 class PromotionsView(ListView):
     model = Promotion
     template_name = 'garage/offers.html'
     context_object_name = 'promotions'
+
+    def get_queryset(self):
+        return _safe_queryset(Promotion, filter_kwargs={'active': True}, order_by=['-start_date'])
 
 class BookingCreateView(CreateView):
     form_class = BookingForm
@@ -73,7 +110,10 @@ class BookingCreateView(CreateView):
         service_id = self.request.GET.get('service')
         if service_id:
             try:
-                service = Service.objects.get(pk=service_id)
+                if _table_exists(Service):
+                    service = Service.objects.get(pk=service_id)
+                else:
+                    service = None
             except Service.DoesNotExist:
                 service = None
             else:
@@ -135,18 +175,18 @@ class AdminDashboardView(View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        testimonials = Testimonial.objects.order_by('-date')
-        bookings = Booking.objects.select_related('service').order_by('-created_at')[:10]
-        contact_messages = ContactMessage.objects.order_by('-created_at')[:10]
+        testimonials = _safe_queryset(Testimonial, order_by=['-date'])
+        bookings = _safe_queryset(Booking, order_by=['-created_at'])
+        contact_messages = _safe_queryset(ContactMessage, order_by=['-created_at'])
 
         context = {
             'testimonials': testimonials,
-            'bookings': bookings,
-            'contact_messages': contact_messages,
+            'bookings': bookings.select_related('service')[:10] if hasattr(bookings, 'select_related') else bookings[:10],
+            'contact_messages': contact_messages[:10],
             'total_testimonials': testimonials.count(),
             'pending_reviews': testimonials.filter(approved=False).count(),
-            'open_bookings': Booking.objects.filter(status__in=['pending', 'contacted', 'confirmed', 'in_progress']).count(),
-            'pending_interactions': ContactMessage.objects.filter(handled=False).count(),
+            'open_bookings': _safe_queryset(Booking, filter_kwargs={'status__in': ['pending', 'contacted', 'confirmed', 'in_progress']}).count(),
+            'pending_interactions': _safe_queryset(ContactMessage, filter_kwargs={'handled': False}).count(),
             'status_choices': Booking.STATUS_CHOICES,
         }
         return render(request, self.template_name, context)

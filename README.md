@@ -75,7 +75,8 @@ Railway deployment
    You can set `DATABASE_URL` on the web service to
    `${{Postgres.DATABASE_URL}}` when the PostgreSQL service is named `Postgres`.
 5. Generate a Railway domain in the web service's **Networking** settings.
-   The app runs migrations on startup and serves static files through WhiteNoise.
+   Railway runs migrations in the pre-deploy step and serves static files through
+   WhiteNoise.
 6. Open the generated URL and verify `/`, `/services/`, `/booking/`, and
    `/contact/`.
 7. Open the Railway service shell and create the first administrator:
